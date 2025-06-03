@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    overflow: hidden;
+}
+
+.game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    background: #0f3460;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    border: 3px solid #4cc9f0;
+}
+
+.game-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    background: rgba(10, 25, 47, 0.7);
+    z-index: 10;
+    border-bottom: 2px solid #4cc9f0;
+}
+
+.score,
+.timer {
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 0 0 5px #4cc9f0;
+}
+
+.game-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.basket {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 40px;
+    background: #8b4513;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 -5px 0 #5d2906;
+    z-index: 5;
+}
+
+.basket::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    width: 80px;
+    height: 20px;
+    background: #a0522d;
+    border-radius: 10px 10px 0 0;
+}
+
+.star {
+    position: absolute;
+    top: -50px;
+    width: 30px;
+    height: 30px;
+    background: #ffeb3b;
+    clip-path: polygon(50% 0%,
+            61% 35%,
+            98% 35%,
+            68% 57%,
+            79% 91%,
+            50% 70%,
+            21% 91%,
+            32% 57%,
+            2% 35%,
+            39% 35%);
+    filter: drop-shadow(0 0 5px #ff9800);
+    z-index: 2;
+}
+
+.instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    background: rgba(15, 52, 96, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    z-index: 20;
+    border: 2px solid #4cc9f0;
+    max-width: 80%;
+}
+
+.instructions h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #4cc9f0;
+    text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+}
+
+.instructions p {
+    font-size: 20px;
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.instructions button {
+    margin-top: 20px;
+    padding: 12px 40px;
+    font-size: 20px;
+    background: #4cc9f0;
+    border: none;
+    border-radius: 50px;
+    color: #0f3460;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+}
+
+.instructions button:hover {
+    background: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(76, 201, 240, 0.8);
+}
+
+.game-over {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    background: rgba(15, 52, 96, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    z-index: 20;
+    border: 2px solid #4cc9f0;
+    width: 80%;
+}
+
+.game-over h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+    color: #4cc9f0;
+}
+
+.game-over p {
+    font-size: 24px;
+    margin: 15px 0;
+}
+
+.game-over button {
+    margin-top: 30px;
+    padding: 15px 50px;
+    font-size: 22px;
+    background: #4cc9f0;
+    border: none;
+    border-radius: 50px;
+    color: #0f3460;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.game-over button:hover {
+    background: #fff;
+    transform: scale(1.05);
+}
+
+.night-sky {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d1a 100%);
+    overflow: hidden;
+}
+
+.twinkle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite;
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.particle {
+    position: absolute;
+    background: #4cc9f0;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.7;
+    animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}

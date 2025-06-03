@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Falling Stars</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="night-sky" id="nightSky"></div>
+
+        <div class="game-header">
+            <div class="score">Score: <span id="scoreValue">0</span></div>
+            <div class="timer">Time: <span id="timeValue">60</span>s</div>
+        </div>
+
+        <div class="game-area">
+            <div class="basket" id="basket"></div>
+            <!-- Stars will be dynamically added here -->
+        </div>
+
+        <div class="instructions" id="instructions">
+            <h1>Catch the Falling Stars</h1>
+            <p>Use the <strong>LEFT</strong> and <strong>RIGHT</strong> arrow keys to move the basket</p>
+            <p>Catch as many falling stars as you can in 60 seconds!</p>
+            <p>Each star caught is worth 1 point</p>
+            <button id="startButton">Start Game</button>
+        </div>
+
+        <div class="game-over" id="gameOver">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <p>Thanks for playing!</p>
+            <button id="restartButton">Play Again</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

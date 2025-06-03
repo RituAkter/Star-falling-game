@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Falling Stars - Smooth Controls</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            overflow: hidden;
+        }
+
+        .game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: #0f3460;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 3px solid #4cc9f0;
+        }
+
+        .game-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            background: rgba(10, 25, 47, 0.7);
+            z-index: 10;
+            border-bottom: 2px solid #4cc9f0;
+        }
+
+        .score,
+        .timer {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #4cc9f0;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .basket {
+            position: absolute;
+            bottom: 30px;
+            left: 350px;
+            width: 100px;
+            height: 40px;
+            background: linear-gradient(to bottom, #8b4513, #5d2906);
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -5px 0 #5d2906;
+            z-index: 5;
+            transition: transform 0.1s ease;
+        }
+
+        .basket::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            width: 80px;
+            height: 20px;
+            background: linear-gradient(to bottom, #a0522d, #8b4513);
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -3px 0 #5d2906;
+        }
+
+        .basket::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 60px;
+            height: 5px;
+            background: #ffd700;
+            border-radius: 3px;
+        }
+
+        .star {
+            position: absolute;
+            top: -50px;
+            width: 30px;
+            height: 30px;
+            background: #ffeb3b;
+            clip-path: polygon(50% 0%,
+                    61% 35%,
+                    98% 35%,
+                    68% 57%,
+                    79% 91%,
+                    50% 70%,
+                    21% 91%,
+                    32% 57%,
+                    2% 35%,
+                    39% 35%);
+            filter: drop-shadow(0 0 5px #ff9800);
+            z-index: 2;
+            animation: twinkle 1.5s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.2);
+            }
+        }
+
+        .instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            background: rgba(15, 52, 96, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            z-index: 20;
+            border: 2px solid #4cc9f0;
+            max-width: 80%;
+        }
+
+        .instructions h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #4cc9f0;
+            text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+        }
+
+        .instructions p {
+            font-size: 20px;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .key {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #4cc9f0;
+            border-radius: 5px;
+            color: #0f3460;
+            font-weight: bold;
+            margin: 0 5px;
+            box-shadow: 0 3px 0 #2a9dc7;
+        }
+
+        .instructions button {
+            margin-top: 20px;
+            padding: 12px 40px;
+            font-size: 20px;
+            background: #4cc9f0;
+            border: none;
+            border-radius: 50px;
+            color: #0f3460;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+        }
+
+        .instructions button:hover {
+            background: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(76, 201, 240, 0.8);
+        }
+
+        .game-over {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            background: rgba(15, 52, 96, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            z-index: 20;
+            border: 2px solid #4cc9f0;
+            width: 80%;
+        }
+
+        .game-over h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            color: #4cc9f0;
+        }
+
+        .game-over p {
+            font-size: 24px;
+            margin: 15px 0;
+        }
+
+        .game-over button {
+            margin-top: 30px;
+            padding: 15px 50px;
+            font-size: 22px;
+            background: #4cc9f0;
+            border: none;
+            border-radius: 50px;
+            color: #0f3460;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .game-over button:hover {
+            background: #fff;
+            transform: scale(1.05);
+        }
+
+        .night-sky {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d1a 100%);
+            overflow: hidden;
+        }
+
+        .twinkle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .particle {
+            position: absolute;
+            background: #4cc9f0;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.7;
+            animation: fadeOut 1s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .controls-info {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 5;
+        }
+
+        .star-caught {
+            position: absolute;
+            color: #ffeb3b;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 235, 59, 0.8);
+            animation: floatUp 1s forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes floatUp {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        .movement-indicator {
+            position: absolute;
+            bottom: 75px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            z-index: 5;
+            transition: opacity 0.3s;
+        }
+
+        .movement-indicator span {
+            background: rgba(76, 201, 240, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 0 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .movement-indicator .left-indicator {
+            transform: translateX(-20px);
+        }
+
+        .movement-indicator .right-indicator {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="night-sky" id="nightSky"></div>
+
+        <div class="game-header">
+            <div class="score">Score: <span id="scoreValue">0</span></div>
+            <div class="timer">Time: <span id="timeValue">60</span>s</div>
+        </div>
+
+        <div class="game-area">
+            <div class="basket" id="basket"></div>
+            <!-- Stars will be dynamically added here -->
+        </div>
+
+        <div class="movement-indicator" id="movementIndicator">
+            <span class="left-indicator">← Moving Left</span>
+            <span class="right-indicator">Moving Right →</span>
+        </div>
+
+        <div class="controls-info">
+            Use <span class="key">←</span> and <span class="key">→</span> arrow keys to move the basket
+        </div>
+
+        <div class="instructions" id="instructions">
+            <h1>Catch the Falling Stars</h1>
+            <p>Use the <span class="key">←</span> and <span class="key">→</span> arrow keys to move the basket</p>
+            <p>Catch as many falling stars as you can in 60 seconds!</p>
+            <p>Each star caught is worth 1 point</p>
+            <button id="startButton">Start Game</button>
+        </div>
+
+        <div class="game-over" id="gameOver">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <p>Thanks for playing!</p>
+            <button id="restartButton">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state variables
+        let score = 0;
+        let timeLeft = 60;
+        let gameActive = false;
+        let basketPosition = 350; // Initial basket position (800px width - basket width 100px)
+        let basketSpeed = 0;
+        const basketMaxSpeed = 6; // Reduced speed for better control
+
+        // DOM elements
+        const basket = document.getElementById('basket');
+        const scoreValue = document.getElementById('scoreValue');
+        const timeValue = document.getElementById('timeValue');
+        const instructions = document.getElementById('instructions');
+        const gameOver = document.getElementById('gameOver');
+        const finalScore = document.getElementById('finalScore');
+        const startButton = document.getElementById('startButton');
+        const restartButton = document.getElementById('restartButton');
+        const nightSky = document.getElementById('nightSky');
+        const movementIndicator = document.getElementById('movementIndicator');
+        const leftIndicator = document.querySelector('.left-indicator');
+        const rightIndicator = document.querySelector('.right-indicator');
+
+        // Create background stars
+        function createBackgroundStars() {
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('twinkle');
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                nightSky.appendChild(star);
+            }
+        }
+
+        // Initialize game
+        function initGame() {
+            createBackgroundStars();
+
+            // Event listeners
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+            startButton.addEventListener('click', startGame);
+            restartButton.addEventListener('click', restartGame);
+
+            // Start game loop
+            requestAnimationFrame(updateBasket);
+        }
+
+        // Handle key down events
+        function handleKeyDown(e) {
+            if (!gameActive) return;
+
+            if (e.key === 'ArrowLeft') {
+                basketSpeed = -basketMaxSpeed;
+                leftIndicator.style.opacity = '1';
+                rightIndicator.style.opacity = '0';
+            } else if (e.key === 'ArrowRight') {
+                basketSpeed = basketMaxSpeed;
+                rightIndicator.style.opacity = '1';
+                leftIndicator.style.opacity = '0';
+            }
+        }
+
+        // Handle key up events
+        function handleKeyUp(e) {
+            if (!gameActive) return;
+
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                basketSpeed = 0;
+                leftIndicator.style.opacity = '0';
+                rightIndicator.style.opacity = '0';
+            }
+        }
+
+        // Update basket position
+        function updateBasket() {
+            if (gameActive) {
+                const basketWidth = 100;
+                const containerWidth = 800;
+
+                basketPosition += basketSpeed;
+
+                // Keep basket within boundaries
+                if (basketPosition < 0) basketPosition = 0;
+                if (basketPosition > containerWidth - basketWidth) {
+                    basketPosition = containerWidth - basketWidth;
+                }
+
+                basket.style.left = `${basketPosition}px`;
+
+                // Add slight tilt when moving
+                if (basketSpeed < 0) {
+                    basket.style.transform = 'rotate(-5deg)';
+                } else if (basketSpeed > 0) {
+                    basket.style.transform = 'rotate(5deg)';
+                } else {
+                    basket.style.transform = 'rotate(0)';
+                }
+            }
+
+            requestAnimationFrame(updateBasket);
+        }
+
+        // Create a falling star
+        function createStar() {
+            if (!gameActive) return;
+
+            const star = document.createElement('div');
+            star.classList.add('star');
+
+            // Random position at the top
+            const starX = Math.random() * 750; // 800px width - 50px star size
+            star.style.left = `${starX}px`;
+
+            document.querySelector('.game-area').appendChild(star);
+
+            // Animation
+            let starY = -30;
+            const fallSpeed = Math.random() * 3 + 2; // Random speed between 2-5px per frame
+
+            function animateStar() {
+                if (!gameActive) {
+                    star.remove();
+                    return;
+                }
+
+                starY += fallSpeed;
+                star.style.top = `${starY}px`;
+
+                // Check if star is caught
+                if (starY > 520) { // Near the bottom
+                    const basketRect = basket.getBoundingClientRect();
+                    const starRect = star.getBoundingClientRect();
+
+                    if (starRect.left > basketRect.left &&
+                        starRect.right < basketRect.right) {
+                        // Star caught!
+                        score++;
+                        scoreValue.textContent = score;
+                        createParticles(starRect.left + 15, starRect.top + 15);
+                        showScorePopup(starRect.left + 15, starRect.top);
+                        star.remove();
+                        return;
+                    }
+                }
+
+                // Remove star if it goes off screen
+                if (starY > 600) {
+                    star.remove();
+                } else {
+                    requestAnimationFrame(animateStar);
+                }
+            }
+
+            requestAnimationFrame(animateStar);
+        }
+
+        // Show score popup when star is caught
+        function showScorePopup(x, y) {
+            const popup = document.createElement('div');
+            popup.classList.add('star-caught');
+            popup.textContent = '+1';
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
+
+            document.querySelector('.game-area').appendChild(popup);
+
+            setTimeout(() => {
+                popup.remove();
+            }, 1000);
+        }
+
+        // Create visual particles for feedback
+        function createParticles(x, y) {
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                const size = Math.random() * 10 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.backgroundColor = i % 2 === 0 ? '#ffeb3b' : '#4cc9f0';
+
+                document.querySelector('.game-area').appendChild(particle);
+
+                // Remove particle after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000);
+            }
+        }
+
+        // Game timer
+        function updateTimer() {
+            if (!gameActive) return;
+
+            timeLeft--;
+            timeValue.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+                endGame();
+            } else {
+                setTimeout(updateTimer, 1000);
+            }
+        }
+
+        // Start the game
+        function startGame() {
+            gameActive = true;
+            instructions.style.display = 'none';
+            score = 0;
+            timeLeft = 60;
+            basketPosition = 350;
+            basketSpeed = 0;
+            basket.style.left = `${basketPosition}px`;
+            basket.style.transform = 'rotate(0)';
+            leftIndicator.style.opacity = '0';
+            rightIndicator.style.opacity = '0';
+            scoreValue.textContent = score;
+            timeValue.textContent = timeLeft;
+
+            // Start creating stars
+            setInterval(createStar, 500); // Create a new star every 500ms
+
+            // Start timer
+            updateTimer();
+        }
+
+        // End the game
+        function endGame() {
+            gameActive = false;
+            finalScore.textContent = score;
+            gameOver.style.display = 'block';
+        }
+
+        // Restart the game
+        function restartGame() {
+            gameOver.style.display = 'none';
+            startGame();
+        }
+
+        // Initialize the game when page loads
+        window.onload = initGame;
+    </script>
+</body>
+
+</html>
